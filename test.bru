@@ -1,0 +1,11 @@
+name: create-user
+method: POST
+url: https://postman-echo.com/post
+body: {
+"name": "{{name}}",
+"job": "{{job}}"
+}
+tests: ^|
+test('status 200', () => expect(res.status).to.equal(200));
+test('name match', () => expect(res.body.json.name).to.equal(data.name));
+test('job match', () => expect(res.body.json.job).to.equal(data.job));

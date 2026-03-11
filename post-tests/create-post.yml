@@ -1,0 +1,37 @@
+info:
+  name: create-post
+  type: http
+  seq: 1
+  tags:
+    - critical
+    - regression
+
+http:
+  method: POST
+  url: https://jsonplaceholder.typicode.com/posts
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "title":"标题测试",
+        "body":"测试内容",
+        "userId":1
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码 201', () => expect(res.status).to.equal(201));       
+        test('返回id字段', () => expect(res.body).to.have.property('id'));    
+        test('id是数字', () => expect(res.body.id).to.be.a('number'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

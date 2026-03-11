@@ -1,0 +1,35 @@
+info:
+  name: update-user
+  type: http
+  seq: 3
+  tags:
+    - regression
+
+http:
+  method: PUT
+  url: https://jsonplaceholder.typicode.com/posts/1
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "title":"更新的标题",
+        "body":"更新的内容"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200',() => expect(res.status).to.equal(200));
+        test('返回了title字段', () => expect(res.body).to.have.property('title'));
+        test('title正确', () => expect(res.body.title).to.equal('更新的标题'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
