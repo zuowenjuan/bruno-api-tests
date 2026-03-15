@@ -20,19 +20,24 @@ jobs:
               cd mock-server         
               npm install express @faker-js/faker         
               cd ..      
-         - name: Start Mock Server in background    
+         - name: Start Mock Server     
            run: |     
               cd mock-server     
               node server.js &         
               cd ..       
               sleep 5         
-         - name: Verify Mock Server is running      
-           run: curl -I http://localhost:3000/api/test || (echo"<span class="emoji emoji2716"></span> Mock Server failed to start" && exit 1)     
-         - name: Run Tests 
-           run: bru run . --reporter-html report.html
-         - name: Upload Test Results   
-           uses: actions/upload-artifact@v4        
-           if: always()   
-           with:       
-              name: test-results       
-              path: report.html
+         - name: Verify Mock Server      
+           run: curl -I http://localhost:3000/api/test   
+         - name:  Login to get token      
+            run: |     
+                curl -X POST http://localhost:3000/api/login \           
+                    -H "Content-Type: application/json" \           
+                    -d '{"username":"admin","password":"123456"}'           
+         - name: Run Tests     
+            run: bru run . --reporter-html report.html     
+         - name: Upload Test Results       
+            uses: actions/upload-artifact@v4      
+            if: always()       
+            with:     
+                name: test-results      
+                path: report.html
