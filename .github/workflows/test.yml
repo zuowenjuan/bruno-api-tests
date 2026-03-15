@@ -1,0 +1,38 @@
+name: API Tests
+on:
+push:  
+branches: [ main ]
+pull_request:    
+branches: [ main ]
+workflow_dispatch:
+jobs:
+test:  
+runs-on: ubuntu-latest
+steps:  
+- name: Checkout code     
+uses: actions/checkout@v4   
+- name: Setup Node.js      
+uses: actions/setup-node@v4
+with:    
+node-version: '20'   
+- name: Install Bruno CLI   
+run: npm install -g @usebruno/cli     
+- name: Install dependencies for Mock Server  
+run: |       
+cd mock-server       
+npm install          
+cd ..      
+- name: Start Mock Server in background       
+run: |     
+cd mock-server       
+nohup node server.js > server.log 2>&1 &   
+cd ..         
+sleep 5     
+- name: Run API Tests      
+run: bru run . --reporter-html report.html      
+- name: Upload Test Results        
+uses: actions/upload-artifact@v4      
+if: always()      
+with:          
+name: test-results         
+path: report.html
