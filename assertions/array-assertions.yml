@@ -1,0 +1,30 @@
+info:
+  name: array-assertions
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:3000/api/array-examples
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('tags数组长度是5', () => {expect(res.body.data.tags).to.have.lengthOf(5);});
+        test('scores数组长度是5', () => {expect(res.body.data.scores).to.have.lengthOf(5);});
+        test('users数组长度是4', () => {expect(res.body.data.users).to.have.lengthOf(4);});
+        test('empty数组长度为0', () => {expect(res.body.data.empty).to.have.lengthOf(0);});
+        test('tags包含"测试"', () => {expect(res.body.data.tags).to.include('测试');});
+        test('tags包含"API"', () => {expect(res.body.data.tags).to.include('API');});
+        test('tags包含指定元素', () => {expect(res.body.data.tags).to.include.members(['测试', 'API']);});
+        test('users数组包含id为1的用户', () => {const user = res.body.data.users.find(u => u.id === 1);expect(user).to.exist;expect(user.name).to.equal('张三');});
+        test('users数组包含特定结构', () => {expect(res.body.data.users).to.deep.include({ id: 2, name: '李四' });});
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

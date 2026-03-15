@@ -1,0 +1,22 @@
+info:
+  name: test-mock
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://localhost:3000/api/test
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('返回了message字段', () => expect(res.body).to.have.property('message'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

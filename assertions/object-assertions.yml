@@ -1,0 +1,38 @@
+info:
+  name: object-assertions
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:3000/api/object-examples
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('存在user.profile.contacts.email', () => { 
+          expect(res.body.data.user.profile.contacts).to.have.property('email');});
+        test('邮箱是zhangsan@example.com', () => {
+          expect(res.body.data.user.profile.contacts.email).to.equal('zhangsan@example.com');});
+        test('地址城市是北京', () => { 
+          expect(res.body.data.user.profile.contacts.address.city).to.equal('北京');});
+        test('主题是dark', () => expect(res.body.data.user.settings.theme).to.equal('dark'));
+        test('邮件通知开启', () => {
+          expect(res.body.data.user.settings.notifications.email).to.be.true;});
+        test('短信通知关闭', () => {
+          expect(res.body.data.user.settings.notifications.sms).to.be.false;});
+        test('用户信息包含必要字段', () => {
+          expect(res.body.data.user).to.include.keys(['id', 'profile', 'settings']);});
+        test('profile包含指定信息', () => {
+          expect(res.body.data.user.profile).to.deep.include({
+            name: '张三',   
+            age: 28  });});
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

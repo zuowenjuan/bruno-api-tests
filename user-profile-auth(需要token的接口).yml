@@ -1,0 +1,33 @@
+info:
+  name: user-profile-auth(需要token的接口)
+  type: http
+  seq: 12
+
+http:
+  method: GET
+  url: http://localhost:3000/api/user/profile
+  headers:
+    - name: Authorization
+      value: " Bearer  {{authToken}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        if (!bru.getVar('authToken')){
+          console.log('未找到token,正在登陆...');
+        }
+    - type: tests
+      code: |-
+        console.log('当前token:',bru.getVar('authToken'));
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('code是0', () => expect(res.body.code).to.equal(0));
+        test('返回了用户信息', () => expect(res.body.data).to.have.property('name'));
+        test('返回了email', () => expect(res.body.data).to.have.property('email'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

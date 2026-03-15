@@ -1,0 +1,42 @@
+info:
+  name: data-driven-mock
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: http://localhost:3000/api/users/{{userId}}
+  auth: inherit
+
+runtime:
+  variables:
+    - name: userId
+      value: "1"
+    - name: expectedName
+      value: zhangsan
+    - name: expectedAge
+      value: "28"
+  scripts:
+    - type: before-request
+      code: |-
+        bru.setVar('userId', 1);
+        bru.setVar('expectedName', 'zhangsan');
+        bru.setVar('expectedAge', 28);
+    - type: tests
+      code: |-
+        console.log('变量值:', bru.getVar('userId'), bru.getVar('expectedName'), bru.getVar('expectedAge'));
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('name正确', () => { 
+          const expected = bru.getVar('expectedName');
+          const actual = res.body.name;
+          expect(actual).to.equal(expected);});
+        test('age正确', () => {
+          const expected = parseInt(bru.getVar('expectedAge'));
+          const actual = res.body.age;
+          expect(actual).to.equal(expected);});
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

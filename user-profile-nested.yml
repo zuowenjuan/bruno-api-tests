@@ -1,0 +1,28 @@
+info:
+  name: user-profile-nested
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: http://localhost:3000/api/users/3/profile
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('有basic对象', () => expect(res.body).to.have.property('basic'));
+        test('basic有name', () => expect(res.body.basic).to.have.property('name'));
+        test('有address对象', () => expect(res.body).to.have.property('address'));
+        test('address有city', () => expect(res.body.address).to.have.property('city'));
+        test('有company对象', () => expect(res.body).to.have.property('company'));
+        test('有orders数组', () => expect(res.body).to.have.property('orders'));
+        test('orders是数组', () => expect(res.body.orders).to.be.an('array'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

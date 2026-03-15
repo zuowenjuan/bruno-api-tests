@@ -1,0 +1,35 @@
+info:
+  name: user-list(分页接口)
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: http://localhost:3000/api/users?page=1&limit=5
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "5"
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('返回了data对象', () => expect(res.body).to.have.property('data'));
+        test('data有list数组', () => expect(res.body.data).to.have.property('list'));
+        test('data有pagination对象', () => expect(res.body.data).to.have.property('pagination'));
+        test('page是1', () => expect(res.body.data.pagination.page).to.equal(1));
+        test('limit是5', () => expect(res.body.data.pagination.limit).to.equal(5));
+        test('total存在', () => expect(res.body.data.pagination.total).to.be.a('number'));
+        test('list长度是5', () => expect(res.body.data.list.length).to.equal(5));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

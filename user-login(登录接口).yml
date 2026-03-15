@@ -1,0 +1,37 @@
+info:
+  name: user-login(登录接口)
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: http://localhost:3000/api/login
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "username":"admin",
+        "password":"123456"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('code是0', () => expect(res.body.code).to.equal(0));
+        test('返回了token', () => expect(res.body.data).to.have.property('token'));
+        test('返回了user信息', () => expect(res.body.data).to.have.property('user'));
+        if (res.body.data && res.body.data.token) { 
+          bru.setVar('authToken', res.body.data.token);
+          console.log('获取到token:', res.body.data.token);}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
