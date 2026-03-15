@@ -16,6 +16,19 @@ jobs:
            with:       
                node-version: '20'
          - name: Install Bruno CLI       
-           run: npm install -g @usebruno/cli             
+           run: npm install -g @usebruno/cli
+         - name: Install Mock Server dependencies    
+           run: |   
+              cd mock-server       
+              npm install         
+              cd ..   
+         - name: Start Mock Server      
+           run: |       
+              cd mock-server      
+              node server.js &     
+              cd ..        
+              sleep 5       
          - name: Run Tests      
            run: bru run .
+
+
