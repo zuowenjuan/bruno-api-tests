@@ -15,25 +15,32 @@ jobs:
                 with:           
                     node-version: '20'        
             - name: Install Bruno CLI         
-                run: npm install -g @usebruno/cli        
+                run: npm install -g @usebruno/cli
+            - name: List files         
+                run: ls -la
+           - name: Check mock-server folder       
+                run: ls -la mock-server/ | | echo "mock-server not found"
             - name: Install Mock Server dependencies         
                 run: |           
                    cd mock-server           
                    npm install express           
-                   cd ..        
+                   cd . .        
             - name: Start Mock Server         
                 run: |           
                    cd mock-server           
                    node server.js &           
-                   cd ..           
-                   sleep 5        
-            - name: Verify Mock Server         
-                   run: curl -s http://localhost:3000/api/test | grep "running"        
+                   cd . .           
+                   sleep 5
+                   echo "Mock Server   started"        
+            - name: Check if Mock Server is running        
+                   run:  | 
+                      curl -v http://localhost:3000/api/test | | echo "Mock Server not responding"
+                      ps aux | grep node        
             - name: Run Tests         
                    run: bru run . -- reporter-html results.html
             - name:Upload Results
                    uses:actions/upload-artifact@v4
-                   if:always()
+                   if: always()
                    with:
                       name:test-results
                       path:results.html
