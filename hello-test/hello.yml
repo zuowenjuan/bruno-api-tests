@@ -1,0 +1,4 @@
+name: hello-test
+method: GET
+url: https://httpbin.org/status/200<br/>tests: |
+test('status is 200', () => expect(res.status).to.equal(200));
