@@ -16,9 +16,11 @@ jobs:
                     node-version: '20'        
             - name: Install Bruno CLI         
                 run: npm install -g @usebruno/cli
-            - name: Check Bruno version      
-                run: bru --version
-            - name: List test files         
-                run:ls -la user-tests/ post-tests/                 
-            - name:Run a single test         
-                run: bru run user-tests/get-users.yml
+            - name: Run simple tests      
+                run: bru run simple-tests/ --reporter-html results.html
+            - name: Upload Results        
+                run:actions/upload-artifact@v4                 
+                if:always()
+                with:
+                    name:test-results
+                    path:results.html
