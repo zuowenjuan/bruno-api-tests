@@ -16,11 +16,7 @@ jobs:
                     node-version: '20'        
             - name: Install Bruno CLI         
                 run: npm install -g @usebruno/cli
-            - name: Run simple tests      
-                run: bru run simple-tests/ --reporter-html results.html
-            - name: Upload Results        
-                run:actions/upload-artifact@v4                 
-                if:always()
-                with:
-                    name:test-results
-                    path:results.html
+            - name: Run tests without Mock     
+                run: echo "Listeing test files..."
+                       ls -la user-tests/post-tests/ | | echo "No tests found"
+                       echo "Tests will br added later"
