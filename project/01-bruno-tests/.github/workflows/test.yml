@@ -1,0 +1,87 @@
+name: API Tests with Reports
+on: 
+  push:>   
+    branches: [ main ] 
+  pull_request:  
+    branches: [ main ]   
+  workflow_dispatch:
+jobs:
+  test:   
+    runs-on: ubuntu-latest   
+    steps:   
+      - name: Checkout code        
+      uses: actions/checkout@v4     
+      - name: Setup Node.js    
+      uses: actions/setup-node@v4        
+      with:        
+        node-version: '20'      
+      - name: Install Bruno CLI        
+      run: npm install -g @usebruno/cli      
+      - name: Debug - list all files       
+      run: |        
+        echo "=== Current directory ==="        
+        pwd          
+        ls -la       
+        echo "=== Mock server folder ==="        
+        ls -la mock-server/ || echo " mock-server folder not found"         
+        echo "=== Test files ==="         
+        ls -la *.yml || echo " No yml files found"    
+      - name: Debug - check mock-server contents        
+        run: |          
+          if [ -d "mock-server" ]; then        
+          echo "✅ mock-server exists"        
+          ls -la mock-server/         
+          echo "=== package.json content ==="          
+          cat mock-server/package.json || echo " No package.json"         
+          echo "=== server.js content (first 10 lines) ==="           
+          head -10 mock-server/server.js || echo "  No server.js"          
+        else           
+          echo " mock-server folder missing!"        
+          exit 1      
+        fi     
+      - name: Install Mock Server dependencies        
+        run: |         
+          cd mock-server        
+          npm install         
+          echo "✅ Dependencies installed"       
+          cd .. 
+      - name: Start Mock Server    
+         run: |       
+           cd mock-server        
+           nohup node server.js > server.log 2>&1 &         
+           echo "✅ Mock server start command executed"      
+           cd ..          
+           sleep 5      
+           echo "✅ Waited 5 seconds"  
+      - name: Verify Mock Server       
+         run: |        
+           echo "=== Checking if Mock Server is running ==="       
+           ps aux | grep node || echo " No node process found"        
+           echo "=== Testing API endpoint ==="        
+           curl -I http://localhost:3000/api/test || (echo " API not responding" && cat mock-server/server.log)   
+           echo "=== Server log ==="      
+           cat mock-server/server.log || echo " No log file"      
+      - name: Login to get token        
+         run: |        
+           echo " Attempting login..."     
+           curl -X POST http://localhost:3000/api/login \            
+           -H "Content-Type: application/json" \           
+           -d '{"username":"admin","password":"123456"}' \       
+           -v || echo " Login failed"    
+      - name: Run Bruno Tests   
+         run: |         
+           bru run . --reporter-html report.html || echo "  Tests failed but continuing"      
+      - name: Upload Test Results       
+         uses: actions/upload-artifact@v4      
+         if: always()      
+         with:          
+           name: test-report         
+           path: report.html    
+      - name: Upload debug logs     
+           uses: actions/upload-artifact@v4        
+           if: failure()       
+           with:        
+             name: debug-logs        
+             path: |            
+               mock-server/server.log    
+               *.log

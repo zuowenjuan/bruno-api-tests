@@ -1,0 +1,27 @@
+info:
+  name: get-users
+  type: http
+  seq: 4
+  tags:
+    - critical
+    - regression
+    - smoke
+
+http:
+  method: GET
+  url: https://jsonplaceholder.typicode.com/posts
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200',() => expect(res.status).to.equal(200));
+        test('返回了数组',() => expect(res.body).to.be.an('array'));
+        test('数组不为空',() => expect(res.body.length).to.be.above(0));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

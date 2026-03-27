@@ -1,0 +1,24 @@
+info:
+  name: delete-user
+  type: http
+  seq: 2
+  tags:
+    - regression
+
+http:
+  method: DELETE
+  url: https://jsonplaceholder.typicode.com/posts/1
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200',() => expect(res.status).to.equal(200));
+        test('返回空对象', () => expect(res.body).to.be.an('object'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

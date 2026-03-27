@@ -1,0 +1,26 @@
+info:
+  name: get-post-by-id
+  type: http
+  seq: 3
+  tags:
+    - smoke
+    - regression
+
+http:
+  method: GET
+  url: https://jsonplaceholder.typicode.com/posts/1
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('状态码200', () => expect(res.status).to.equal(200));
+        test('有title字段', () => expect(res.body).to.have.property('title'));
+        test('title是字符串', () => expect(res.body.title).to.be.a('string'));
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
